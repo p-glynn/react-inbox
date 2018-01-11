@@ -21,22 +21,22 @@ class App extends Component {
 
   count = (messages, propName) => {
     let ct = 0;
-    let messagesWithProp = this.state.messages.slice(0);
-    messagesWithProp.map((message) => {
+    let messagesWithProp = [...messages];
+    messagesWithProp.forEach((message) => {
       if (message[propName]) ct++;
     })
     return ct;
   }
 
   countSelected = (messages) => {
-    const numSelected = this.state.messages.slice(0);
+    const numSelected = [...messages];
     if (this.count(numSelected, 'selected') < numSelected.length) {
-      numSelected.map((msg) => {
+      numSelected.forEach((msg) => {
         msg.selected = true;
       })
       this.setState({messages:numSelected})
     } else {
-      numSelected.map((msg) => {
+      numSelected.forEach((msg) => {
         msg.selected = false;
       })
       this.setState({messages:numSelected})
@@ -44,19 +44,19 @@ class App extends Component {
   }
 
   mark = (messages, val) => {
-    const copy = this.state.messages.slice(0);
-    copy.map((msg) => {
+    const copy = [...messages];
+    copy.forEach((msg) => {
       if (msg.selected) msg.read = val;
     })
     this.setState({messages:copy})
   }
 
   updateLabels = (messages, label, val) => {
-    const copy = this.state.messages.slice(0);
-    copy.map((msg) => {
+    const copy = [...messages];
+    copy.forEach((msg) => {
       if (msg.selected) {
-        if (val && !msg.labels.includes(label) && label != "false") {
-          msg.labels.push(label);
+        if (val && !msg.labels.includes(label) && label !== "false") {
+          msg.labels = [...msg.labels, label];
         }
         else if (!val && msg.labels.includes(label)) {
           msg.labels.splice(msg.labels.indexOf(label), 1)
@@ -67,8 +67,8 @@ class App extends Component {
   }
 
   del = (messages) => {
-    const copy = this.state.messages.slice(0);
-    copy.map((msg) => {
+    const copy = [...messages];
+    copy.forEach((msg) => {
       if (msg.selected) {
         copy.splice(copy.indexOf(msg), 1);
       }
