@@ -2,9 +2,12 @@ import React from 'react';
 
 const Toolbar = ({messages, count, countSelected, mark, updateLabels, del}) => {
 
+  const isDisabled = (count(messages, 'selected') === 0) ? 'disabled' : '';
+
   const checkSelected = (messages) => {
-    if (count(messages, 'selected') === 0) return "fa fa-square-o"
-    else if (count(messages, 'selected') < messages.length) {
+    if (count(messages, 'selected') === 0) {
+      return "fa fa-square-o"
+    } else if (count(messages, 'selected') < messages.length) {
       return "fa fa-minus-square-o"
     } else {
       return "fa fa-check-square-o"
@@ -25,13 +28,13 @@ const Toolbar = ({messages, count, countSelected, mark, updateLabels, del}) => {
           <i className={checkSelected(messages)}></i>
         </button>
 
-        <button className="btn btn-default" onClick={() => {
+        <button className="btn btn-default" disabled={isDisabled} onClick={() => {
           mark(messages, true);
         }}>
           Mark As Read
         </button>
 
-        <button className="btn btn-default" onClick={() => {
+        <button className="btn btn-default" disabled={isDisabled} onClick={() => {
           mark(messages, false);
         }}>
           Mark As Unread
