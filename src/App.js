@@ -2,14 +2,22 @@ import React, { Component } from 'react';
 import './App.css';
 import MessagesList from './Components/MessagesList';
 import Toolbar from './Components/Toolbar';
+import NewMessage from './Components/NewMessage';
 import Navbar from './Components/Navbar';
 
 class App extends Component {
   constructor(props) {
     super(props)
     this.state= {
-      messages: this.props.messages
+      messages: [],
+      hidden: true
     }
+  }
+
+  async componentDidMount() {
+    const response = await fetch ('http://localhost:8082/api/messages/');
+    const json = await response.json();
+    this.setState({messages: json._embedded.messages})
   }
 
   toggleClass = (message, nameOfClass) => {
@@ -66,14 +74,64 @@ class App extends Component {
     this.setState({messages:copy})
   }
 
-  del = (messages) => {
-    const copy = [...messages];
-    copy.forEach((msg) => {
-      if (msg.selected) {
-        copy.splice(copy.indexOf(msg), 1);
-      }
+  toggleHidden = (hidden) => {
+    hidden ? this.setState({hidden:false}) : this.setState({hidden:true})
+  }
+
+  // del = (messages) => {
+  //   const copy = [...messages];
+  //   copy.forEach((msg) => {
+  //     if (msg.selected) {
+  //       copy.splice(copy.indexOf(msg), 1);
+  //     }
+  //   })
+  //   this.setState({messages:copy})
+  // }
+
+  async simplePatch (message, nameOfClass, value) {
+    const body = {};
+    body['messageIds'] = [message.id];
+    body["command"] = nameOfClass;
+    body[nameOfClass] = value;
+    await fetch('http://localhost:8082/api/messages/', {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: {
+       'Content-Type': 'application/json',
+       'Accept': 'application/json',
+     }
     })
-    this.setState({messages:copy})
+  }
+
+  async multiPatch (messages, action, value) {
+    const body = {};
+    body['messageIds'] = [];
+    body["command"] = action;
+    if (action !== "delete") body[action] = value;
+    if (action === "addLabel" || action === "removeLabel") body["label"] = value
+    const copy = [...messages];
+      copy.forEach((msg) => {
+        if (msg.selected) {
+          body.messageIds.push(msg.id)
+        }
+      })
+    console.log(body);
+    await fetch('http://localhost:8082/api/messages/', {
+      method: 'PATCH',
+      body: JSON.stringify(body),
+      headers: {
+       'Content-Type': 'application/json',
+       'Accept': 'application/json',
+     }
+    })
+
+    // const response = await fetch ('http://localhost:8082/api/messages/');
+    // const json = await response.json();
+    // console.log(json);
+    // await this.setState({messages: json._embedded.messages})
+    // WHY THIS DOESNT WORK :( :( :( :( :( :( :( :( :(
+    // there has to be some way
+
   }
 
   render() {
@@ -88,8 +146,17 @@ class App extends Component {
             countSelected={this.countSelected}
             mark={this.mark}
             updateLabels={this.updateLabels}
-            del={this.del}/>
-          <MessagesList messages={this.state.messages} toggleClass={this.toggleClass}/>
+            // del={this.del}
+            multiPatch={this.multiPatch}
+            hidden={this.state.hidden}
+            toggleHidden={this.toggleHidden}
+            />
+          <NewMessage hidden={this.state.hidden}
+            toggleHidden={this.toggleHidden}/>
+          <MessagesList
+            messages={this.state.messages}
+            toggleClass={this.toggleClass}
+            simplePatch={this.simplePatch}/>
         </div>
 
       </div>
