@@ -116,7 +116,7 @@ class App extends Component {
         }
       })
     console.log(body);
-    await fetch('http://localhost:8082/api/messages/', {
+    fetch('http://localhost:8082/api/messages/', {
       method: 'PATCH',
       body: JSON.stringify(body),
       headers: {
