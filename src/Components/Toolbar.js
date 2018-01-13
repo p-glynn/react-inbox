@@ -67,7 +67,6 @@ const Toolbar = ({messages, count, countSelected, mark, updateLabels, multiPatch
         </select>
 
         <button className="btn btn-default" disabled={isDisabled} onClick={() => {
-          // del(messages);
           multiPatch(messages, "delete")
         }}>
           <i className="fa fa-trash-o"></i>

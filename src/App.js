@@ -78,15 +78,11 @@ class App extends Component {
     hidden ? this.setState({hidden:false}) : this.setState({hidden:true})
   }
 
-  // del = (messages) => {
-  //   const copy = [...messages];
-  //   copy.forEach((msg) => {
-  //     if (msg.selected) {
-  //       copy.splice(copy.indexOf(msg), 1);
-  //     }
-  //   })
-  //   this.setState({messages:copy})
-  // }
+   reRender = async () => {
+    const response = await fetch ('http://localhost:8082/api/messages/');
+    const json = await response.json();
+    this.setState({messages: json._embedded.messages})
+  }
 
   async simplePatch (message, nameOfClass, value) {
     const body = {};
@@ -103,7 +99,7 @@ class App extends Component {
     })
   }
 
-  async multiPatch (messages, action, value) {
+  multiPatch = async (messages, action, value) => {
     const body = {};
     body['messageIds'] = [];
     body["command"] = action;
@@ -115,8 +111,7 @@ class App extends Component {
           body.messageIds.push(msg.id)
         }
       })
-    console.log(body);
-    fetch('http://localhost:8082/api/messages/', {
+    let patchReq = fetch('http://localhost:8082/api/messages/', {
       method: 'PATCH',
       body: JSON.stringify(body),
       headers: {
@@ -124,14 +119,24 @@ class App extends Component {
        'Accept': 'application/json',
      }
     })
+    await patchReq;
+    this.reRender();
+  }
 
-    // const response = await fetch ('http://localhost:8082/api/messages/');
-    // const json = await response.json();
-    // console.log(json);
-    // await this.setState({messages: json._embedded.messages})
-    // WHY THIS DOESNT WORK :( :( :( :( :( :( :( :( :(
-    // there has to be some way
-
+  makePost = async (event) => {
+    let requestBody = {}
+    requestBody["subject"] = document.getElementById("subject").value;
+    requestBody["body"] = document.getElementById("body").value;
+    let postReq = fetch ('http://localhost:8082/api/messages/', {
+      method: 'POST',
+      body: JSON.stringify(requestBody),
+      headers: {
+       'Content-Type': 'application/json',
+       'Accept': 'application/json',
+     }
+   })
+   await postReq;
+   this.reRender();
   }
 
   render() {
@@ -152,7 +157,8 @@ class App extends Component {
             toggleHidden={this.toggleHidden}
             />
           <NewMessage hidden={this.state.hidden}
-            toggleHidden={this.toggleHidden}/>
+            toggleHidden={this.toggleHidden}
+            makePost ={this.makePost}/>
           <MessagesList
             messages={this.state.messages}
             toggleClass={this.toggleClass}

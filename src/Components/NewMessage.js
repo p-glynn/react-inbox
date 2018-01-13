@@ -1,6 +1,6 @@
 import React from 'react';
 
-const NewMessage = ({hidden, toggleHidden}) => {
+const NewMessage = ({hidden, toggleHidden, makePost}) => {
 
   const isHidden = hidden ? "hidden" : ""
 
@@ -25,19 +25,9 @@ const NewMessage = ({hidden, toggleHidden}) => {
           </div>
         </div>
         <div className="form-group">
-          <div className="col-sm-8 col-sm-offset-2" onClick={(e)=> {
-            e.preventDefault();
-            let requestBody = {}
-            requestBody["subject"] = document.getElementById("subject").value;
-            requestBody["body"] = document.getElementById("body").value;
-            fetch ('http://localhost:8082/api/messages/', {
-              method: 'POST',
-              body: JSON.stringify(requestBody),
-              headers: {
-               'Content-Type': 'application/json',
-               'Accept': 'application/json',
-             }
-           }) // changes are happening here in the server but aren't being reflected properly on the front-end :(
+          <div className="col-sm-8 col-sm-offset-2" onClick={(event)=> {
+            event.preventDefault();
+            makePost(event);
             toggleHidden();
           }}>
             <input type="submit" value="Send" className="btn btn-primary"></input>
