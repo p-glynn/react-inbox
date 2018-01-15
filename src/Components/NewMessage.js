@@ -7,7 +7,7 @@ const NewMessage = ({ makePost }) => {
     <div className ="new-message-form" onSubmit={(event) =>{
        event.preventDefault();
        makePost(event);
-       window.location="/";
+       window.location="/"; // I really want a way to do this in react but I can't figure it out... maybe have to re-factor to a class-based component
     }}>
       <form className="form-horizontal well">
         <div className="form-group">

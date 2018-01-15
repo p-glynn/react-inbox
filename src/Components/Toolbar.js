@@ -1,10 +1,13 @@
 import React from 'react';
-// eslint-disable-next-line
-import NewMessage from './NewMessage';
-// eslint-disable-next-line
-import {BrowserRouter as Router, Route, Link, Switch} from "react-router-dom";
+import {Route, Link, Switch} from "react-router-dom";
 
-const Toolbar = ({messages, count, countSelected, mark, updateLabels, multiPatch, hidden, toggleHidden}) => {
+const Toolbar = ({
+  messages,
+  count,
+  countSelected,
+  mark,
+  updateLabels,
+  multiPatch}) => {
 
   const isDisabled = (count(messages, 'selected') === 0) ? 'disabled' : '';
 

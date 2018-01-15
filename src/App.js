@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-// eslint-disable-next-line
-import {BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
+import {Route} from 'react-router-dom';
 import './App.css';
 import MessagesList from './Components/MessagesList';
 import Toolbar from './Components/Toolbar';
@@ -22,11 +21,11 @@ class App extends Component {
     this.setState({messages: json._embedded.messages})
   }
 
-  toggleClass = (message, nameOfClass) => {
+  toggleClass = (message, cls) => {
     const index = this.state.messages.indexOf(message);
-    let newMessages = this.state.messages.slice(0);
-    newMessages[index][nameOfClass] = !newMessages[index][nameOfClass];
-    this.setState({messages:newMessages})
+    let newMsgs = this.state.messages.slice(0);
+    cls !== "read" ? newMsgs[index][cls] = !newMsgs[index][cls] : newMsgs[index][cls] = "read"
+    this.setState({messages:newMsgs})
   }
 
   count = (messages, propName) => {
@@ -100,17 +99,10 @@ class App extends Component {
     })
   }
 
-  expand = async(message) => {
-    const id = message.id;
-    const request = await fetch(`http://localhost:8082/api/messages/${id}`);
-    const response = await request.json();
-    // console.log(response);
-    return response.body;
-  }
 
   multiPatch = async (messages, action, value) => {
     const body = {};
-    body['messageIds'] = [];
+    body['messageIds'] = []
     body["command"] = action;
     if (action !== "delete") body[action] = value;
     if (action === "addLabel" || action === 'removeLabel') body['label']=value;
@@ -161,18 +153,15 @@ class App extends Component {
             mark={this.mark}
             updateLabels={this.updateLabels}
             multiPatch={this.multiPatch}
-            hidden={this.state.hidden}
-            toggleHidden={this.toggleHidden}
-            clickPushState={this.clickPushState}
             />
           <Route path='/compose' component={ props =>
-            <NewMessage makePost ={this.makePost.bind(this)} /> }
+            <NewMessage makePost = {this.makePost} /> }
            />
           <MessagesList
             messages={this.state.messages}
             toggleClass={this.toggleClass}
             simplePatch={this.simplePatch}
-            expand={this.expand}/>
+            />
         </div>
 
       </div>
