@@ -51,7 +51,7 @@ const Message = ({message, toggleClass, simplePatch}) => {
            </Link>
          )} />
        </Switch>
-      </div>
+     </div> {/* It might be worth re-factoring this switch component, it behaves a little bit wonky at the moment*/}
     </div>
   )
 }
