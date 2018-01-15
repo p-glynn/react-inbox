@@ -1,9 +1,6 @@
 import React, { Component } from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Link
-} from 'react-router-dom'
+// eslint-disable-next-line
+import {BrowserRouter as Router, Route, Link, Redirect} from 'react-router-dom';
 import './App.css';
 import MessagesList from './Components/MessagesList';
 import Toolbar from './Components/Toolbar';
@@ -47,13 +44,12 @@ class App extends Component {
       numSelected.forEach((msg) => {
         msg.selected = true;
       })
-      this.setState({messages:numSelected})
     } else {
       numSelected.forEach((msg) => {
         msg.selected = false;
       })
-      this.setState({messages:numSelected})
     }
+    this.setState({messages:numSelected})
   }
 
   mark = (messages, val) => {
@@ -104,18 +100,25 @@ class App extends Component {
     })
   }
 
+  expand = async(message) => {
+    const id = message.id;
+    const request = await fetch(`http://localhost:8082/api/messages/${id}`);
+    const response = await request.json();
+    // console.log(response);
+    return response.body;
+  }
+
   multiPatch = async (messages, action, value) => {
     const body = {};
     body['messageIds'] = [];
     body["command"] = action;
     if (action !== "delete") body[action] = value;
-    if (action === "addLabel" || action === "removeLabel") body["label"] = value
-    const copy = [...messages];
-      copy.forEach((msg) => {
-        if (msg.selected) {
-          body.messageIds.push(msg.id)
-        }
-      })
+    if (action === "addLabel" || action === 'removeLabel') body['label']=value;
+    messages.forEach((msg) => {
+      if (msg.selected) {
+        body.messageIds.push(msg.id)
+      }
+    })
     let patchReq = fetch('http://localhost:8082/api/messages/', {
       method: 'PATCH',
       body: JSON.stringify(body),
@@ -144,6 +147,7 @@ class App extends Component {
    this.reRender();
   }
 
+
   render() {
     return (
       <div className="App">
@@ -156,18 +160,19 @@ class App extends Component {
             countSelected={this.countSelected}
             mark={this.mark}
             updateLabels={this.updateLabels}
-            // del={this.del}
             multiPatch={this.multiPatch}
             hidden={this.state.hidden}
             toggleHidden={this.toggleHidden}
+            clickPushState={this.clickPushState}
             />
-          <NewMessage hidden={this.state.hidden}
-            toggleHidden={this.toggleHidden}
-            makePost ={this.makePost}/>
+          <Route path='/compose' component={ props =>
+            <NewMessage makePost ={this.makePost.bind(this)} /> }
+           />
           <MessagesList
             messages={this.state.messages}
             toggleClass={this.toggleClass}
-            simplePatch={this.simplePatch}/>
+            simplePatch={this.simplePatch}
+            expand={this.expand}/>
         </div>
 
       </div>

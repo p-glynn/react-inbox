@@ -1,17 +1,25 @@
 import React from 'react';
+// eslint-disable-next-line
+import {BrowserRouter as Router, Route, Link, Switch} from "react-router-dom";
+import ExpandedMessage from './ExpandedMessage';
 
-const Message = ({message, toggleClass, simplePatch}) => {
+const Message = ({message, toggleClass, simplePatch, expand}) => {
 
   const isRead = message.read ? 'read' : 'unread';
   const isSelected = message.selected ? 'selected' : '';
   const isChecked = message.selected ? 'checked' : "";
   const isStarred = message.starred ? 'star fa fa-star' : 'star fa fa-star-o'
+  // eslint-disable-next-line
+  let id, msgBody;
+  // let msgBody = await expand(message);
+
 
   return (
     <div className={`row message ${isRead} ${isSelected}`} onClick={()=>{
       let value = !message.read;
-      toggleClass(message, "read")
-      simplePatch(message, "read", value)}}>
+      toggleClass(message, "read");
+      simplePatch(message, "read", value);
+      }}>
       <div className="col-xs-1">
         <div className="row">
           <div className="col-xs-2" onClick={(e)=>{
@@ -32,9 +40,23 @@ const Message = ({message, toggleClass, simplePatch}) => {
       </div>
       <div className="col-xs-11">
         {message.labels.map((label) => <span key={message.labels.indexOf(label)} className="label label-warning">{label}</span>)}
-        <a>
-          {message.subject}
-        </a>
+        {/* <a>
+
+        </a> */}
+        <Switch>
+          {id = message.id}
+         <Route path={`/messages/${id}`} render={ () => (
+           <Link to="/">
+             {message.subject}
+             <ExpandedMessage message={message}/>
+           </Link>
+         )} />
+         <Route render={ () => (
+           <Link to={`/messages/${id}`}>
+             {message.subject}
+           </Link>
+         )} />
+       </Switch>
       </div>
     </div>
   )
