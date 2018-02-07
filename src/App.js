@@ -15,17 +15,18 @@ class App extends Component {
     }
   }
 
+
   async componentDidMount() {
-    const response = await fetch ('http://localhost:8082/api/messages/');
+    const response = await fetch('http://localhost:8082/api/messages/');
     const json = await response.json();
     this.setState({messages: json._embedded.messages})
   }
 
   toggleClass = (message, cls) => {
-    const index = this.state.messages.indexOf(message);
-    let newMsgs = this.state.messages.slice(0);
-    cls !== "read" ? newMsgs[index][cls] = !newMsgs[index][cls] : newMsgs[index][cls] = "read"
-    this.setState({messages:newMsgs})
+    const i = this.state.messages.indexOf(message);
+    let nMsgs = this.state.messages.slice(0);
+    cls !== "read" ? nMsgs[i][cls] = !nMsgs[i][cls] : nMsgs[i][cls] = "read"
+    this.setState({messages:nMsgs})
   }
 
   count = (messages, propName) => {

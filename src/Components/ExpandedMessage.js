@@ -2,25 +2,21 @@ import React from "react";
 
 class ExpandedMessage extends React.Component {
 
-  constructor(props) {
-    super(props)
-    this.state = {
-      body: ''
-    }
+  state = { body: '' }
+
+  async componentDidMount() {
+    const message = await this.getMessage(this.props.message);
+    this.expand(message.body);
   }
 
-
-  async expand (message) {
+  async getMessage (message) {
     const id = message.id;
     const request = await fetch(`http://localhost:8082/api/messages/${id}`)
-    const response = await request.json();
-    this.setState({body: response.body})
+    const res = await request.json();
+    return res;
   }
 
-
-  componentDidMount() {
-    this.body = this.expand(this.props.message)
-  }
+  expand = body => this.setState({ body })
 
   render () {
     return (
@@ -29,7 +25,7 @@ class ExpandedMessage extends React.Component {
          {this.state.body}
        </div>
      </div>
-)
+   )
   }
 }
 

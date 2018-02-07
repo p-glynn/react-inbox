@@ -6,9 +6,9 @@ const MessagesList = ({messages, toggleClass, simplePatch}) => {
   return (
     <div>
       {messages.map(message => (<Message key={message.id}
-        message= {message}
-        toggleClass={toggleClass}
-        simplePatch={simplePatch}
+        message = {message}
+        toggleClass = {toggleClass}
+        simplePatch = {simplePatch}
         />))}
     </div>
   )
